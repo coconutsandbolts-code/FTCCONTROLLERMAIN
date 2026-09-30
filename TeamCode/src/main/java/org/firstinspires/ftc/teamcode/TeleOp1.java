@@ -145,7 +145,7 @@ public class TeleOp1 extends LinearOpMode {
 
                 }
                 if(gamepad2.dpad_left){
-                    ot.setVelocity(1400);
+                    ot.setVelocity(-1400);
                 }
                 if(gamepad2.b){
                     ot.setPower(-0.8);
