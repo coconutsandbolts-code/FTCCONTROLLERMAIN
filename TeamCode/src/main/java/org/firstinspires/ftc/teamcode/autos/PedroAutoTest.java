@@ -16,7 +16,14 @@ import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.pedropathing.paths.Path;
-@Autonomous
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
+
+@Autonomous(name = "pedroAutoTest")
 public class PedroAutoTest extends OpMode {
     private Follower follower;
     private final PoseFactory p = PoseFactory.degrees();
@@ -26,10 +33,10 @@ public class PedroAutoTest extends OpMode {
     Pose start = poseFactory.of(0, 0, 180); // 180 degrees
     Pose end = poseFactory.of(10, 10, 90); // 90 degrees
     Pose control = poseFactory.of(10, 20, 45); // 45 degrees
-    private final Pose startPose = p.of(24, 24, 0);
-    private final Pose park = p.of(48, 48, 90);
-    private final Pose scorePose = p.of(48, 48, 90);
-    private final Pose parkPose = p.of(72, 48, 90);
+    private final Pose startPose = poseFactory.of(0, 0, 90);
+    private final Pose park = poseFactory.of(48, 48, 90);
+    private final Pose scorePose = poseFactory.of(90, 90, 90);
+    private final Pose parkPose = poseFactory.of(20, 20, 90);
     private final Pose controlPose = p.of(36, 60, 45);
     Path line = Paths.line(start, end);
 
@@ -42,11 +49,18 @@ public class PedroAutoTest extends OpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(startPose);
         follower.update();
+
     }
+
+
+
+
 
     @Override
     public void start() {
         schedule(autoRoutine());
+
+        // using the same park path from the last page
     }
 
     @Override
@@ -69,11 +83,17 @@ public class PedroAutoTest extends OpMode {
     private Path startToScore() {
         return line(startPose, scorePose).linear(startPose, scorePose);
     }
+    private Path ScoreToPark() {
+        return line(startPose, scorePose).linear(startPose, scorePose);
+    }
+
     private Command autoRoutine() {
         return sequential(
-                follow(follower, startToScore()),
+                follow(follower, startToScore())
                 // Add mechanism commands here.
-                follow(follower, park())
+                //follow(follower, park())
+
+
         );
     }
     @Override

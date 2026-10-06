@@ -33,7 +33,6 @@ public class PedroTeleOpTest extends OpMode {
                 gamepad1.right_stick_x,
                 follower.pose().heading()
         );
-        follower.manual(powers);
 
         // relocalise button
         if (gamepad1.startWasPressed()) {
