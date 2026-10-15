@@ -19,16 +19,17 @@ public class TeleOpRed extends LinearOpMode {
 
     DcMotor itb = null; // Intake
 
+    DcMotor ot = null;
     DcMotor itf = null;
-    DcMotorEx ot = null; // Outtake
-    Servo flick;
+
+    //Servo flick;
 
     double integralSum = 0;
     double Kp = 0;
     double Ki = 0;
     double Kd = 0;
 
-    double Kf = 15.4;
+    double Kf = 0;
 
     ElapsedTime timer = new ElapsedTime();
 
@@ -42,12 +43,12 @@ public class TeleOpRed extends LinearOpMode {
         fl = hardwareMap.get(DcMotor.class, "LF"); // Front Left motor (named "LF" in robot config)
         fr = hardwareMap.get(DcMotor.class, "RF"); // Front Right motor (named "RF" in robot config)
         br = hardwareMap.get(DcMotor.class, "RB"); // Back Right motor (named "RB" in robot config)
-        itf = hardwareMap.get(DcMotor.class, "ITF");
-        itb = hardwareMap.get(DcMotor.class, "ITB");
-        ot = hardwareMap.get(DcMotorEx.class, "OT");
-        flick = hardwareMap.get(Servo.class, "Flick");
-        ot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        ot.setDirection(DcMotorSimple.Direction.REVERSE);
+//        itf = hardwareMap.get(DcMotor.class, "ITF");
+//        itb = hardwareMap.get(DcMotor.class, "ITB");
+        ot = hardwareMap.get(DcMotor.class, "OT1");
+        //flick = hardwareMap.get(Servo.class, "Flick");
+
+        ot.setDirection(DcMotor.Direction.REVERSE);
         // Set the direction of each motor
         // Reverse the left motors to ensure correct movement direction
         br.setDirection(DcMotor.Direction.FORWARD);
@@ -64,7 +65,7 @@ public class TeleOpRed extends LinearOpMode {
 
         // Wait for the start button to be pressed
         waitForStart();
-        ot.setVelocityPIDFCoefficients(Kp, Ki, Kd, Kf);
+        //ot1.setVelocityPIDFCoefficients(Kp, Ki, Kd, Kf);
 
         while (opModeIsActive()) {
             // Read the joystick values from gamepad 1
@@ -80,11 +81,11 @@ public class TeleOpRed extends LinearOpMode {
             double scale;
 
             if (gamepad1.right_bumper) {
-                scale = 0.75;
+                scale = 1;
             } else if (gamepad1.right_trigger > 0) {
                 scale = 0.25;
             } else {
-                scale = 0.5;
+                scale = 0.75;
             }
 
             blPower *= scale;
@@ -98,69 +99,63 @@ public class TeleOpRed extends LinearOpMode {
             br.setPower(brPower);
             fr.setPower(frPower);
 
-            if (gamepad2.y) {
 
-
-                flick.setPosition(0.6);
-
-            }
-            if (gamepad2.yWasReleased()) {
-
-                flick.setPosition(1);
-
-
-            }
             if (gamepad2.left_trigger <= 0 && !gamepad2.dpad_right && !gamepad2.a && !gamepad2.x && !gamepad2.dpad_down && !gamepad2.dpad_left && gamepad2.right_trigger <= 0 && !gamepad2.dpad_up){
-                itf.setPower(0);
-                itb.setPower(0);
+//                itf.setPower(0);
+//                itb.setPower(0);
                 ot.setPower(0);
             }
             else{
-                if (gamepad2.a) {
-                    itf.setPower(-1);   // Intake runs while holding A
-                    itb.setPower(-1);
-                }
-                if (gamepad2.x){
-                    itf.setPower(1);
-                    itb.setPower(1);
-                }
-                if(gamepad2.dpad_up){
-                    itf.setPower(-1);
-                }
-                if(gamepad2.dpad_down){
-                    itb.setPower(-1);
-                }
+//                if (gamepad2.a) {
+//                    itf.setPower(-1);   // Intake runs while holding A
+//                    itb.setPower(-1);
+//                }
+//                if (gamepad2.x){
+//                    itf.setPower(1);
+//                    itb.setPower(1);
+//                }
+//                if(gamepad2.dpad_up){
+//                    itf.setPower(-1);
+//                }
+//                if(gamepad2.dpad_down){
+//                    itb.setPower(-1);
+//                }
                 if (gamepad2.dpad_right) {
                     //ot.setPower(.60);   // Outtake runs while holding B short
                     //double power = PIDControl(25,ot.getVelocity());
                     //((DcMotorEx) ot).setVelocity(200);
-                    ot.setVelocity(965);
+                    ot.setPower(.7);
 
 
 
 
                 }
+
+                if (gamepad2.xWasPressed()){
+                    ot.setPower(.9);
+                }
+
                 if(gamepad2.dpad_left){
-                    ot.setVelocity(1400);
+                    //ot1.setVelocity(1400);
                 }
                 if(gamepad2.b){
-                    ot.setPower(-0.8);
+                    ot.setPower(-0.7);
                 }
 
 
                 if (gamepad2.left_trigger > 0) {
                     //remove
 
-                    System.out.println(ot.getVelocity());
+
                     //remove
-                    itf.setPower(-1);
-                    itb.setPower(-1);
-                    ot.setVelocity(1400);
+//                    itf.setPower(-1);
+//                    itb.setPower(-1);
+                    ot.setPower(.8);
                 }
                 if(gamepad2.right_trigger > 0){
-                    itf.setPower(-1);
-                    itb.setPower(-1);
-                    ot.setVelocity(965);
+//                    itf.setPower(-1);
+//                    itb.setPower(-1);
+                    ot.setPower(.8);
                 }
             }
             // Display motor powers for debugging purposes
@@ -169,13 +164,15 @@ public class TeleOpRed extends LinearOpMode {
             telemetry.addData("BR Power", brPower); // Back Right power
             telemetry.addData("FR Power", frPower); // Front Right power
 
-            telemetry.addData("Flick Position", flick.getPosition());
-            telemetry.addData("Velocity", ot.getVelocity()); // Front Right power
+
+            //telemetry.addData("Velocity", ot1.setPower()); // Front Right power
             telemetry.update(); // Updates the telemetry on the driver station
         }
 
 
     }
+
+    
 //    public double PIDControl(double reference, double state){
 //        double error = reference - state;
 //        integralSum += error * timer.seconds();

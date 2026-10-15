@@ -26,23 +26,16 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Autonomous(name = "pedroAutoTest")
 public class PedroAutoTest extends OpMode {
     private Follower follower;
-    private final PoseFactory p = PoseFactory.degrees();
+
     // our poses
-    PoseFactory poseFactory = PoseFactory.degrees();
-
-    Pose start = poseFactory.of(0, 0, 180); // 180 degrees
-    Pose end = poseFactory.of(10, 10, 90); // 90 degrees
-    Pose control = poseFactory.of(10, 20, 45); // 45 degrees
+    private final PoseFactory poseFactory = PoseFactory.degrees();
+//    Pose start = poseFactory.of(26.389755113572896, 10.9, 90); // 180 degrees
+//    Pose end = poseFactory.of(10, 10, 90); // 90 degrees
+//    Pose control = poseFactory.of(10, 20, 45); // 45 degrees
     private final Pose startPose = poseFactory.of(0, 0, 90);
-    private final Pose park = poseFactory.of(48, 48, 90);
-    private final Pose scorePose = poseFactory.of(90, 90, 90);
-    private final Pose parkPose = poseFactory.of(20, 20, 90);
-    private final Pose controlPose = p.of(36, 60, 45);
-    Path line = Paths.line(start, end);
+    private final Pose scorePose = poseFactory.of(80, 0, 90);
+    private final Pose parkPose = poseFactory.of(80, 77, 90);
 
-    Path curve = Paths.curve(start, control, end);
-
-    Path path = Paths.path(line, curve);
     @Override
     public void init() {
         Scheduler.reset();
@@ -51,11 +44,6 @@ public class PedroAutoTest extends OpMode {
         follower.update();
 
     }
-
-
-
-
-
     @Override
     public void start() {
         schedule(autoRoutine());
@@ -83,15 +71,14 @@ public class PedroAutoTest extends OpMode {
     private Path startToScore() {
         return line(startPose, scorePose).linear(startPose, scorePose);
     }
-    private Path ScoreToPark() {
-        return line(startPose, scorePose).linear(startPose, scorePose);
-    }
+
 
     private Command autoRoutine() {
         return sequential(
-                follow(follower, startToScore())
+                follow(follower, startToScore()),
                 // Add mechanism commands here.
-                //follow(follower, park())
+                follow(follower, park())
+
 
 
         );
@@ -100,17 +87,8 @@ public class PedroAutoTest extends OpMode {
     public void stop() {
         OpModeStorage.autonomousEndPose = follower.pose(); //saves your position in that file
     }
-    public Path linePath() {
-        return Paths.line(start, end);
-    }
 
-    public Path curvePath() {
-        return Paths.curve(start, control, end);
-    }
 
-    public Path compoundPath() {
-        return Paths.path(linePath(), curvePath());
-    }
 
 
 
