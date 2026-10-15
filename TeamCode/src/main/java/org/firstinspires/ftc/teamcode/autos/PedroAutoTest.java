@@ -34,7 +34,9 @@ public class PedroAutoTest extends OpMode {
 //    Pose control = poseFactory.of(10, 20, 45); // 45 degrees
     private final Pose startPose = poseFactory.of(0, 0, 90);
     private final Pose scorePose = poseFactory.of(80, 0, 90);
-    private final Pose parkPose = poseFactory.of(80, 77, 90);
+    private final Pose ballPose = poseFactory.of(80, 70, 90);
+
+    private final Pose parkPose = poseFactory.of(0, 0, 90);
 
     @Override
     public void init() {
@@ -66,16 +68,20 @@ public class PedroAutoTest extends OpMode {
         telemetry.update();
     }
     private Path park() {
-        return line(startPose, parkPose).linear(startPose, parkPose);
+        return line(ballPose, parkPose).linear(ballPose, parkPose);
     }
     private Path startToScore() {
         return line(startPose, scorePose).linear(startPose, scorePose);
+    }
+    private Path scoreToBall() {
+        return line(scorePose, ballPose).linear(scorePose, ballPose);
     }
 
 
     private Command autoRoutine() {
         return sequential(
                 follow(follower, startToScore()),
+                follow(follower, scoreToBall()),
                 // Add mechanism commands here.
                 follow(follower, park())
 

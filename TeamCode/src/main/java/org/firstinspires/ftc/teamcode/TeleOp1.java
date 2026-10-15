@@ -84,7 +84,7 @@ public class TeleOp1 extends LinearOpMode {
             double scale;
 
             if (gamepad1.right_bumper) {
-                scale = 0.75;
+                scale = 1;
             } else if (gamepad1.right_trigger > 0) {
                 scale = 0.25;
             } else {
