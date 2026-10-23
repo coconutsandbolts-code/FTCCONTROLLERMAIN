@@ -17,7 +17,7 @@ public class TeleOpRed extends LinearOpMode {
     DcMotor fr = null; // Front Right motor
     DcMotor br = null; // Back Right motor
 
-    DcMotor itb = null; // Intake
+    DcMotor it = null; // Intake
 
     DcMotor ot = null;
     DcMotor itf = null;
@@ -43,7 +43,7 @@ public class TeleOpRed extends LinearOpMode {
         fl = hardwareMap.get(DcMotor.class, "LF"); // Front Left motor (named "LF" in robot config)
         fr = hardwareMap.get(DcMotor.class, "RF"); // Front Right motor (named "RF" in robot config)
         br = hardwareMap.get(DcMotor.class, "RB"); // Back Right motor (named "RB" in robot config)
-//        itf = hardwareMap.get(DcMotor.class, "ITF");
+        it = hardwareMap.get(DcMotor.class, "IT");
 //        itb = hardwareMap.get(DcMotor.class, "ITB");
         ot = hardwareMap.get(DcMotor.class, "OT1");
         //flick = hardwareMap.get(Servo.class, "Flick");
@@ -100,20 +100,20 @@ public class TeleOpRed extends LinearOpMode {
             fr.setPower(frPower);
 
 
-            if (gamepad2.left_trigger <= 0 && !gamepad2.dpad_right && !gamepad2.a && !gamepad2.x && !gamepad2.dpad_down && !gamepad2.dpad_left && gamepad2.right_trigger <= 0 && !gamepad2.dpad_up){
-//                itf.setPower(0);
+            if (gamepad2.left_trigger <= 0 && !gamepad2.dpad_right && !gamepad2.a && !gamepad2.x && !gamepad2.dpad_down && !gamepad2.dpad_left && gamepad2.right_trigger <= 0 && !gamepad2.dpad_up && !gamepad2.b){
+                it.setPower(0);
 //                itb.setPower(0);
                 ot.setPower(0);
             }
             else{
-//                if (gamepad2.a) {
-//                    itf.setPower(-1);   // Intake runs while holding A
-//                    itb.setPower(-1);
-//                }
-//                if (gamepad2.x){
-//                    itf.setPower(1);
-//                    itb.setPower(1);
-//                }
+                if (gamepad2.a) {
+                    it.setPower(-.75);   // Intake runs while holding A
+
+                }
+                if (gamepad2.b){
+                    it.setPower(.75);
+
+                }
 //                if(gamepad2.dpad_up){
 //                    itf.setPower(-1);
 //                }
