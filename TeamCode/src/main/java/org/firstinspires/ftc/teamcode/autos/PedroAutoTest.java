@@ -13,6 +13,9 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.instant;
+import static com.pedropathing.ivy.commands.Commands.waitUntil;
+import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.pedropathing.paths.Path;
@@ -26,17 +29,18 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Autonomous(name = "pedroAutoTest")
 public class PedroAutoTest extends OpMode {
     private Follower follower;
-
+    DcMotor it = null; // Intake
     // our poses
     private final PoseFactory poseFactory = PoseFactory.degrees();
 //    Pose start = poseFactory.of(26.389755113572896, 10.9, 90); // 180 degrees
 //    Pose end = poseFactory.of(10, 10, 90); // 90 degrees
 //    Pose control = poseFactory.of(10, 20, 45); // 45 degrees
-    private final Pose startPose = poseFactory.of(0, 0, 90);
-    private final Pose scorePose = poseFactory.of(80, 0, 90);
-    private final Pose ballPose = poseFactory.of(80, 70, 90);
+    private final Pose startPose = poseFactory.of(55, 0, 90);
+    private final Pose shootPose = poseFactory.of(55, 15, 90);
+    private final Pose pointPose = poseFactory.of(109, 15, 0);
 
-    private final Pose parkPose = poseFactory.of(0, 0, 90);
+    private final Pose tPose = poseFactory.of(109, 110, 90);
+    private final Pose parkPose = poseFactory.of(8, 110, 90);
 
     @Override
     public void init() {
@@ -48,7 +52,11 @@ public class PedroAutoTest extends OpMode {
     }
     @Override
     public void start() {
+        it = hardwareMap.get(DcMotor.class, "IT");
+        it.setDirection(DcMotor.Direction.REVERSE);
         schedule(autoRoutine());
+
+
 
         // using the same park path from the last page
     }
@@ -68,26 +76,39 @@ public class PedroAutoTest extends OpMode {
         telemetry.update();
     }
     private Path park() {
-        return line(ballPose, parkPose).linear(ballPose, parkPose);
+        return line(tPose  , parkPose).linear(tPose, parkPose);
     }
     private Path startToScore() {
-        return line(startPose, scorePose).linear(startPose, scorePose);
+        return line(startPose, shootPose).linear(startPose, shootPose);
     }
-    private Path scoreToBall() {
-        return line(scorePose, ballPose).linear(scorePose, ballPose);
+    private Path shootToPoint() {
+        return line(shootPose, pointPose).linear(shootPose, pointPose);
+    }
+    private Path pointToT() {
+        return line(pointPose, tPose).linear(pointPose, tPose);
     }
 
 
     private Command autoRoutine() {
         return sequential(
                 follow(follower, startToScore()),
-                follow(follower, scoreToBall()),
-                // Add mechanism commands here.
+                follow(follower, shootToPoint()),
+                instant(() -> it.setPower(.75)),
+                follow(follower, pointToT()),
                 follow(follower, park())
+                //instant(() -> it.setPower(0))
+                // Add mechanism commands here.
+
 
 
 
         );
+    }
+    private Command intakeAtHalfWay() {
+        return sequential(
+                //waitUntil(() -> follower.completion() >= 0.5),
+                instant(() -> it.setPower(.75))
+                );
     }
     @Override
     public void stop() {

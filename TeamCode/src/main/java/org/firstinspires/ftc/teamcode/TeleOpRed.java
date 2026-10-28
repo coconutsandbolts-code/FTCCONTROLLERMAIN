@@ -55,6 +55,7 @@ public class TeleOpRed extends LinearOpMode {
         fr.setDirection(DcMotor.Direction.FORWARD);
         fl.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.REVERSE);
+        it.setDirection(DcMotor.Direction.REVERSE);
         //((DcMotorEx) ot).setVelocityPIDFCoefficients(250, 0, 0, 12);
 
 
@@ -106,12 +107,12 @@ public class TeleOpRed extends LinearOpMode {
                 ot.setPower(0);
             }
             else{
-                if (gamepad2.a) {
-                    it.setPower(-.75);   // Intake runs while holding A
+                if (gamepad2.cross) {
+                    it.setPower(.75);   // Intake runs while holding A
 
                 }
-                if (gamepad2.b){
-                    it.setPower(.75);
+                if (gamepad2.square){
+                    it.setPower(-.75);
 
                 }
 //                if(gamepad2.dpad_up){
