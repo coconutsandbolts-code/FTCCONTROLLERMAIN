@@ -14,6 +14,7 @@ import com.pedropathing.ivy.Scheduler;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
@@ -35,18 +36,21 @@ public class PedroAutoTest extends OpMode {
 //    Pose start = poseFactory.of(26.389755113572896, 10.9, 90); // 180 degrees
 //    Pose end = poseFactory.of(10, 10, 90); // 90 degrees
 //    Pose control = poseFactory.of(10, 20, 45); // 45 degrees
-    private final Pose startPose = poseFactory.of(55, 0, 90);
-    private final Pose shootPose = poseFactory.of(55, 15, 90);
-    private final Pose pointPose = poseFactory.of(109, 15, 0);
+    private final Pose startPose = poseFactory.of(70, 0, 90);
+    private final Pose shootPose = poseFactory.of(70, 15, 90);
+
+
+    private final Pose pointPose = poseFactory.of(30, 17, 180);
 
     private final Pose tPose = poseFactory.of(109, 110, 90);
-    private final Pose parkPose = poseFactory.of(8, 110, 90);
-
+    private final Pose parkPose = poseFactory.of(15, 110, 90);
+    private final Pose d1pose = poseFactory.of(70, 15, 0);
     @Override
     public void init() {
         Scheduler.reset();
         follower = Constants.create(hardwareMap);
         follower.setPose(startPose);
+        follower.holdEnd.set(true);
         follower.update();
 
     }
@@ -88,14 +92,19 @@ public class PedroAutoTest extends OpMode {
         return line(pointPose, tPose).linear(pointPose, tPose);
     }
 
-
+    private Path direction1() {
+        return line(shootPose, d1pose).linear(shootPose, d1pose);
+    }
     private Command autoRoutine() {
         return sequential(
+               waitMs(1000),
                 follow(follower, startToScore()),
-                follow(follower, shootToPoint()),
-                instant(() -> it.setPower(.75)),
-                follow(follower, pointToT()),
-                follow(follower, park())
+                //follow(follower,direction1()),
+                follow(follower, shootToPoint())
+
+//                //instant(() -> it.setPower(.75)),
+//                follow(follower, pointToT()),
+//                follow(follower, park())
                 //instant(() -> it.setPower(0))
                 // Add mechanism commands here.
 
