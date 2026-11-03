@@ -14,11 +14,14 @@ import com.pedropathing.ivy.Scheduler;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
-import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.commands.Commands.lazy;
 import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.parallel;
+import static com.pedropathing.ivy.groups.Groups.race;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import static com.pedropathing.ivy.pedro.PedroCommands.hold;
+
 import com.pedropathing.paths.Path;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -33,24 +36,22 @@ public class PedroAutoTest extends OpMode {
     DcMotor it = null; // Intake
     // our poses
     private final PoseFactory poseFactory = PoseFactory.degrees();
-//    Pose start = poseFactory.of(26.389755113572896, 10.9, 90); // 180 degrees
+    //    Pose start = poseFactory.of(26.389755113572896, 10.9, 90); // 180 degrees
 //    Pose end = poseFactory.of(10, 10, 90); // 90 degrees
 //    Pose control = poseFactory.of(10, 20, 45); // 45 degrees
-    private final Pose startPose = poseFactory.of(70, 0, 90);
-    private final Pose shootPose = poseFactory.of(70, 15, 90);
-
-
-    private final Pose pointPose = poseFactory.of(30, 17, 180);
+    private final Pose startPose = poseFactory.of(60, 5, 90);
+    private final Pose shootPose = poseFactory.of(60, 20, 90);
+    private final Pose pointPose = poseFactory.of(15, 34, 180);
 
     private final Pose tPose = poseFactory.of(109, 110, 90);
-    private final Pose parkPose = poseFactory.of(15, 110, 90);
-    private final Pose d1pose = poseFactory.of(70, 15, 0);
+    private final Pose parkPose = poseFactory.of(8, 110, 90);
+    private Pose target;
+
     @Override
     public void init() {
         Scheduler.reset();
         follower = Constants.create(hardwareMap);
         follower.setPose(startPose);
-        follower.holdEnd.set(true);
         follower.update();
 
     }
@@ -58,6 +59,7 @@ public class PedroAutoTest extends OpMode {
     public void start() {
         it = hardwareMap.get(DcMotor.class, "IT");
         it.setDirection(DcMotor.Direction.REVERSE);
+
         schedule(autoRoutine());
 
 
@@ -80,7 +82,7 @@ public class PedroAutoTest extends OpMode {
         telemetry.update();
     }
     private Path park() {
-        return line(tPose  , parkPose).linear(tPose, parkPose);
+        return line(tPose, parkPose).linear(tPose, parkPose);
     }
     private Path startToScore() {
         return line(startPose, shootPose).linear(startPose, shootPose);
@@ -92,18 +94,17 @@ public class PedroAutoTest extends OpMode {
         return line(pointPose, tPose).linear(pointPose, tPose);
     }
 
-    private Path direction1() {
-        return line(shootPose, d1pose).linear(shootPose, d1pose);
-    }
     private Command autoRoutine() {
-        return sequential(
-               waitMs(1000),
-                follow(follower, startToScore()),
-                //follow(follower,direction1()),
-                follow(follower, shootToPoint())
 
-//                //instant(() -> it.setPower(.75)),
-//                follow(follower, pointToT()),
+        return sequential(
+                follow(follower, startToScore().with(Constants.foresightConfig.maxPathSpeed.at(0.5))),
+                //instant(() -> follower.setHeading(270))
+                follow(follower, shootToPoint().with(Constants.foresightConfig.maxPathSpeed.at(0.5)))
+//
+//                instant(() -> follower.setHeading(180))
+
+                //instant(() -> it.setPower(.75)),
+                //follow(follower, pointToT())
 //                follow(follower, park())
                 //instant(() -> it.setPower(0))
                 // Add mechanism commands here.
@@ -117,7 +118,7 @@ public class PedroAutoTest extends OpMode {
         return sequential(
                 //waitUntil(() -> follower.completion() >= 0.5),
                 instant(() -> it.setPower(.75))
-                );
+        );
     }
     @Override
     public void stop() {
