@@ -41,9 +41,9 @@ public class PedroAutoTest extends OpMode {
 //    Pose control = poseFactory.of(10, 20, 45); // 45 degrees
     private final Pose startPose = poseFactory.of(60, 5, 90);
     private final Pose shootPose = poseFactory.of(60, 20, 90);
-    private final Pose pointPose = poseFactory.of(15, 34, 180);
+    private final Pose pointPose = poseFactory.of(25, 34, 90);
 
-    private final Pose tPose = poseFactory.of(109, 110, 90);
+    private final Pose tPose = poseFactory.of(20, 110, 90);
     private final Pose parkPose = poseFactory.of(8, 110, 90);
     private Pose target;
 
@@ -74,11 +74,10 @@ public class PedroAutoTest extends OpMode {
         // add your other methods needed in the loop here
         telemetry.addData("X", follower.pose().x());
         telemetry.addData("Y", follower.pose().y());
-        telemetry.addData("Heading", Math.toDegrees(follower.pose().heading()));
-        telemetry.addData("Follower Mode", follower.mode());
+        telemetry.addData("Heading",Math.toDegrees(follower.pose().heading()));
+
         // We will add these two, but you can use the many other follower methods aswell in your own code!
-        telemetry.addData("Path completion", follower.completion());
-        telemetry.addData("Distance remaining in path", follower.remainingDistance());
+
         telemetry.update();
     }
     private Path park() {
@@ -99,9 +98,10 @@ public class PedroAutoTest extends OpMode {
         return sequential(
                 follow(follower, startToScore().with(Constants.foresightConfig.maxPathSpeed.at(0.5))),
                 //instant(() -> follower.setHeading(270))
-                follow(follower, shootToPoint().with(Constants.foresightConfig.maxPathSpeed.at(0.5)))
+                follow(follower, shootToPoint().with(Constants.foresightConfig.maxPathSpeed.at(0.5))),
+                follow(follower, pointToT().with(Constants.foresightConfig.maxPathSpeed.at(0.5)))
 //
-//                instant(() -> follower.setHeading(180))
+
 
                 //instant(() -> it.setPower(.75)),
                 //follow(follower, pointToT())
