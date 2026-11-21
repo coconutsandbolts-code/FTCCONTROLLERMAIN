@@ -18,14 +18,16 @@ public class TeleOpRed extends LinearOpMode {
     DcMotor br = null; // Back Right motor
 
     DcMotor it = null; // Intake
-
+    Servo flick = null;
+    Servo flower = null;
     DcMotor ot = null;
     DcMotor itf = null;
 
     //Servo flick;
-
+    boolean flickStartPos = true;
+    boolean flowerStartPos = true;
     double integralSum = 0;
-    double Kp = 0;
+    double Kp = 19;
     double Ki = 0;
     double Kd = 0;
 
@@ -47,6 +49,8 @@ public class TeleOpRed extends LinearOpMode {
 //        itb = hardwareMap.get(DcMotor.class, "ITB");
         ot = hardwareMap.get(DcMotor.class, "OT1");
         //flick = hardwareMap.get(Servo.class, "Flick");
+        flower = hardwareMap.get(Servo.class, "FLOWER");
+        flick = hardwareMap.get(Servo.class, "FLICK");
 
         ot.setDirection(DcMotor.Direction.REVERSE);
         // Set the direction of each motor
@@ -56,9 +60,10 @@ public class TeleOpRed extends LinearOpMode {
         fl.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.REVERSE);
         it.setDirection(DcMotor.Direction.REVERSE);
-        //((DcMotorEx) ot).setVelocityPIDFCoefficients(250, 0, 0, 12);
+        ((DcMotorEx) ot).setVelocityPIDFCoefficients(Kp, Ki, Kd, Kf);
 
-
+        flick.setPosition(.45);
+        flower.setPosition(0);
 
         // Display status on the driver station
         telemetry.addData("Mode", "waiting"); // Shows "waiting" until start button is pressed
@@ -66,7 +71,6 @@ public class TeleOpRed extends LinearOpMode {
 
         // Wait for the start button to be pressed
         waitForStart();
-        //ot1.setVelocityPIDFCoefficients(Kp, Ki, Kd, Kf);
 
         while (opModeIsActive()) {
             // Read the joystick values from gamepad 1
@@ -100,6 +104,29 @@ public class TeleOpRed extends LinearOpMode {
             br.setPower(brPower);
             fr.setPower(frPower);
 
+            if (gamepad2.triangleWasPressed()){
+                if (flickStartPos){
+                    flick.setPosition(.9);
+                    flickStartPos = false;
+                }
+                else if (flickStartPos == false){
+                    flick.setPosition(.45);
+                    flickStartPos = true;
+                }
+
+
+
+            }
+
+            if (gamepad2.circleWasPressed()) {
+                if (flowerStartPos) {
+                    flower.setPosition(1);
+                    flowerStartPos = false;
+                } else if (flowerStartPos == false) {
+                    flower.setPosition(.45);
+                    flowerStartPos = true;
+                }
+            }
 
             if (gamepad2.left_trigger <= 0 && !gamepad2.dpad_right && !gamepad2.a && !gamepad2.x && !gamepad2.dpad_down && !gamepad2.dpad_left && gamepad2.right_trigger <= 0 && !gamepad2.dpad_up && !gamepad2.b){
                 it.setPower(0);
@@ -139,9 +166,7 @@ public class TeleOpRed extends LinearOpMode {
                 if(gamepad2.dpad_left){
                     //ot1.setVelocity(1400);
                 }
-                if(gamepad2.b){
-                    ot.setPower(-0.7);
-                }
+
 
 
                 if (gamepad2.left_trigger > 0) {
@@ -156,7 +181,7 @@ public class TeleOpRed extends LinearOpMode {
                 if(gamepad2.right_trigger > 0){
 //                    itf.setPower(-1);
 //                    itb.setPower(-1);
-                    ot.setPower(.8);
+                    ot.setPower(.5);
                 }
             }
             // Display motor powers for debugging purposes
