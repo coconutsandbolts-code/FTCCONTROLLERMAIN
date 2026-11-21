@@ -97,7 +97,7 @@ public class PedroAutoTest extends OpMode {
 
         return sequential(
                 follow(follower, startToScore().with(Constants.foresightConfig.maxPathSpeed.at(0.5))),
-                //instant(() -> follower.setHeading(270))
+                instant(() -> it.setPower(-.75)),
                 follow(follower, shootToPoint().with(Constants.foresightConfig.maxPathSpeed.at(0.5))),
                 follow(follower, pointToT().with(Constants.foresightConfig.maxPathSpeed.at(0.5)))
 //

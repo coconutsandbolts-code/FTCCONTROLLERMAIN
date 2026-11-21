@@ -26,8 +26,9 @@ public class TeleOpRed extends LinearOpMode {
     //Servo flick;
     boolean flickStartPos = true;
     boolean flowerStartPos = true;
+    boolean turretRunning = true;
     double integralSum = 0;
-    double Kp = 19;
+    double Kp = 20;
     double Ki = 0;
     double Kd = 0;
 
@@ -63,7 +64,7 @@ public class TeleOpRed extends LinearOpMode {
         ((DcMotorEx) ot).setVelocityPIDFCoefficients(Kp, Ki, Kd, Kf);
 
         flick.setPosition(.45);
-        flower.setPosition(0);
+        flower.setPosition(0.03);
 
         // Display status on the driver station
         telemetry.addData("Mode", "waiting"); // Shows "waiting" until start button is pressed
@@ -118,28 +119,28 @@ public class TeleOpRed extends LinearOpMode {
 
             }
 
-            if (gamepad2.circleWasPressed()) {
+            if (gamepad2.dpadLeftWasPressed()) {
                 if (flowerStartPos) {
-                    flower.setPosition(1);
+                    flower.setPosition(.085);
                     flowerStartPos = false;
                 } else if (flowerStartPos == false) {
-                    flower.setPosition(.45);
+                    flower.setPosition(0.03);
                     flowerStartPos = true;
                 }
             }
 
-            if (gamepad2.left_trigger <= 0 && !gamepad2.dpad_right && !gamepad2.a && !gamepad2.x && !gamepad2.dpad_down && !gamepad2.dpad_left && gamepad2.right_trigger <= 0 && !gamepad2.dpad_up && !gamepad2.b){
+            if (gamepad2.left_trigger <= 0 && !gamepad2.dpad_right && !gamepad2.a && !gamepad2.x && !gamepad2.dpad_down && !gamepad2.dpad_left && gamepad2.right_trigger <= 0 && !gamepad2.dpad_up && !gamepad2.b && !gamepad2.touchpadWasPressed()){
                 it.setPower(0);
 //                itb.setPower(0);
-                ot.setPower(0);
+                //ot.setPower(0);
             }
             else{
-                if (gamepad2.cross) {
+                if (gamepad2.square) {
                     it.setPower(.75);   // Intake runs while holding A
 
                 }
-                if (gamepad2.square){
-                    it.setPower(-.75);
+                if (gamepad2.cross){
+                    it.setPower(-.85);
 
                 }
 //                if(gamepad2.dpad_up){
@@ -152,7 +153,7 @@ public class TeleOpRed extends LinearOpMode {
                     //ot.setPower(.60);   // Outtake runs while holding B short
                     //double power = PIDControl(25,ot.getVelocity());
                     //((DcMotorEx) ot).setVelocity(200);
-                    ot.setPower(.7);
+                    //ot.setPower(.7);
 
 
 
@@ -160,29 +161,45 @@ public class TeleOpRed extends LinearOpMode {
                 }
 
                 if (gamepad2.xWasPressed()){
-                    ot.setPower(.9);
+                    //ot.setPower(.9);
                 }
 
-                if(gamepad2.dpad_left){
-                    //ot1.setVelocity(1400);
+                if(gamepad2.circleWasPressed()){
+                    ((DcMotorEx) ot).setVelocity(-2000);
+
                 }
 
 
-
-                if (gamepad2.left_trigger > 0) {
+                if (gamepad2.dpadDownWasPressed()) {
                     //remove
 
 
                     //remove
 //                    itf.setPower(-1);
 //                    itb.setPower(-1);
-                    ot.setPower(.8);
+                    if(turretRunning){
+
+                        turretRunning = false;
+                    }
+                    else if (turretRunning == false){
+
+                        turretRunning = true;
+                    }
+
                 }
-                if(gamepad2.right_trigger > 0){
-//                    itf.setPower(-1);
-//                    itb.setPower(-1);
-                    ot.setPower(.5);
+                if(turretRunning){
+                    ((DcMotorEx) ot).setVelocity(2000);
                 }
+                else if (turretRunning == false){
+                    ((DcMotorEx) ot).setVelocity(0);
+
+                }
+//                if(gamepad2.right_trigger > 0){
+////                    itf.setPower(-1);
+////                    itb.setPower(-1);
+//                    it.setPower(-.85);
+//                    ((DcMotorEx) ot).setVelocity(2000);
+//                }
             }
             // Display motor powers for debugging purposes
             telemetry.addData("BL Power", blPower); // Back Left power
@@ -234,9 +251,3 @@ Robot Configuration Instructions:
 This code is designed to work out of the box with the specified motor setup.
 */
 
-//NAMES:
-// OT = OUTTAKE
-// 0 on Expansion is nothing
-// 1 is IT = Intake
-// 2 is Back Left
-// 3 is Forward Left
